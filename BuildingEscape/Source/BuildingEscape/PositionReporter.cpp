@@ -22,7 +22,8 @@ void UPositionReporter::BeginPlay()
 	
 	FString ObjectName = GetOwner()->GetName();
 	FString ObjectPos = GetOwner()->GetActorLocation().ToString();
-	UE_LOG(LogTemp, Warning, TEXT("%s's Pos is %s"), *ObjectName, *ObjectPos);
+	//FString ObjectPos = GetOwner()->GetTransform().ToString();
+	UE_LOG(LogTemp, Warning, TEXT("%s is at %s"), *ObjectName, *ObjectPos);
 }
 
 
