@@ -15,6 +15,7 @@ public:
 	// Sets default values for this component's properties
 	UOpenDoor();
 	void OpenDoor();
+	void CloseDoor();
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	
@@ -22,11 +23,16 @@ public:
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
 private:
-	UPROPERTY(VisibleAnyWhere)
-	float OpenAngle = 90.0f;
+	AActor* Owner;
+	UPROPERTY(EditAnyWhere)
+	float OpenAngle = -120.0f;
 	
 	UPROPERTY(EditAnyWhere)
 	ATriggerVolume* PressurePlate;
 	
+	UPROPERTY(EditAnyWhere)
+	float DoorCloseDelay = 1.f;
+
+	float LastOpenDoorTime ;
 	AActor* ActorThatOpen;
 };
