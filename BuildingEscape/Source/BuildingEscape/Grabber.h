@@ -34,7 +34,7 @@ private:
 	void Release();
 
 	const void FindPhysicsHandleComponent();
-	const void GetFirstPhysicsBodyReach();
+	FHitResult GetFirstPhysicsBodyReach();
 
 	const void FindInputComponent();
 
