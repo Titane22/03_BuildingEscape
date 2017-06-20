@@ -28,6 +28,14 @@ private:
 
 	UInputComponent* InputComponent = nullptr;
 
+	// Ray - cast and grab what's in reach
 	void Grab();
+	// Called when grab is released
 	void Release();
+
+	const void FindPhysicsHandleComponent();
+	const void GetFirstPhysicsBodyReach();
+
+	const void FindInputComponent();
+
 };
