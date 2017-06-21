@@ -23,17 +23,19 @@ void UGrabber::BeginPlay()
 }
 
 void UGrabber::Grab() {
+	/// LINE TRACE and see if we reach any actors with physics body collision channel set
 	auto HitResult=GetFirstPhysicsBodyReach();
-	auto ComponentToGrab = HitResult.GetComponent();
+	auto ComponentToGrab = HitResult.GetComponent(); //gets the mesh in our case
 	auto ActorHit = HitResult.GetActor();
 
+	///if we hit something then attach a physics handle
 	if (ActorHit != nullptr)
 	{
 		PhysicsHandle->GrabComponent(
 			ComponentToGrab,
-			NAME_None,
+			NAME_None,// no bones needed
 			ComponentToGrab->GetOwner()->GetActorLocation(),
-			true
+			true // allow rotation
 		);
 	}
 }

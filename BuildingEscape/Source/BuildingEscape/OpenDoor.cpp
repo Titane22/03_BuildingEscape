@@ -23,7 +23,6 @@ void UOpenDoor::BeginPlay()
 	//Find owning Actor
 	Owner = GetOwner();
 	//Set Player's Pawn
-	ActorThatOpen=GetWorld()->GetFirstPlayerController()->GetPawn();
 }
 
 void UOpenDoor::OpenDoor() {
@@ -39,7 +38,7 @@ void UOpenDoor::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompo
 {
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
 
-	if (PressurePlate->IsOverlappingActor(ActorThatOpen)) 
+	if (GetTotalMassOfActorsOnPlate() > 50.f )// TODO make into a parameter
 	{
 		OpenDoor();
 		LastOpenDoorTime = GetWorld()->GetTimeSeconds();
@@ -49,5 +48,18 @@ void UOpenDoor::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompo
 	{
 		CloseDoor();
 	}
+}
+
+float UOpenDoor::GetTotalMassOfActorsOnPlate()
+{
+	float TotalMass = 60.0f;
+
+	// Find all the overlapping actors
+	TArray<AActor*>OverlappingActors;
+	PressurePlate->GetOverlappingActors(OUT OverlappingActors);
+
+	// Iterate through them adding their masses
+
+	return TotalMass;
 }
 
