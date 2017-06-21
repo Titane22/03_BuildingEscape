@@ -7,11 +7,16 @@
 */DerivedDataCache
 */Intermediate
 */Saved
-
+BulidingEscape/Content/StarterContent/Textures
+BulidingEscape/Content/StarterContent/HDRI
 
 ########################
 #Visual Generated Files#
 ########################
 
 *.VC.db
-BuildingEscape/BuildingEscape.VC.VC.opendb
+*.suo
+*.VC.opendb
+*.sln
+
+

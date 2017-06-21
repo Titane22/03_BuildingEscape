@@ -35,4 +35,5 @@ private:
 
 	float LastOpenDoorTime ;
 	AActor* ActorThatOpen;
+
 };

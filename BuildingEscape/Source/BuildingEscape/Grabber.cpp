@@ -1,5 +1,4 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
 #include "BuildingEscape.h"
 #include "Grabber.h"
 
@@ -14,7 +13,6 @@ UGrabber::UGrabber()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-
 // Called when the game starts
 void UGrabber::BeginPlay()
 {
@@ -25,7 +23,6 @@ void UGrabber::BeginPlay()
 }
 
 void UGrabber::Grab() {
-	UE_LOG(LogTemp, Warning, TEXT("Grab Pressed!!"))
 	auto HitResult=GetFirstPhysicsBodyReach();
 	auto ComponentToGrab = HitResult.GetComponent();
 	auto ActorHit = HitResult.GetActor();
@@ -40,37 +37,23 @@ void UGrabber::Grab() {
 		);
 	}
 }
+
 void UGrabber::Release() {
-	UE_LOG(LogTemp, Warning, TEXT("Grab Released!!"))
-		PhysicsHandle->ReleaseComponent();
+	PhysicsHandle->ReleaseComponent();
 }
 
-const void UGrabber::FindPhysicsHandleComponent()
+void UGrabber::FindPhysicsHandleComponent()
 {
 	///Look for attached Physics Handle
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if (PhysicsHandle)
-	{
-		// Physics handle found
-	}
-	else
+	if (PhysicsHandle==nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s missing physics handle component!!"), *GetOwner()->GetName())
 	}
 }
 
-FHitResult UGrabber::GetFirstPhysicsBodyReach()
+const FHitResult UGrabber::GetFirstPhysicsBodyReach()
 {
-	///Get The player view point this tick 
-	FVector PlayerViewPointLocation;
-	FRotator PlayerViewPointRotation;
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
-		OUT PlayerViewPointLocation,
-		OUT PlayerViewPointRotation
-	);
-
-	FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector()*Reach;
-
 	///Setup query parameters
 	FCollisionQueryParams TraceParameters(FName(TEXT("")), false, GetOwner());
 
@@ -78,11 +61,12 @@ FHitResult UGrabber::GetFirstPhysicsBodyReach()
 	FHitResult Hit;
 	GetWorld()->LineTraceSingleByObjectType(
 		OUT Hit,
-		PlayerViewPointLocation,
-		LineTraceEnd,
+		GetReachLineStart(),
+		GetReachLineEnd(),
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
 		TraceParameters
 	);
+
 	AActor* ActorHit = Hit.GetActor();
 	if (ActorHit)
 	{
@@ -92,15 +76,13 @@ FHitResult UGrabber::GetFirstPhysicsBodyReach()
 	return Hit;
 }
 
-const void UGrabber::FindInputComponent()
+void UGrabber::FindInputComponent()
 {
 	///Look for attached Input Component (only appears at run time)
 	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
 	if (InputComponent)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Input Component found!!"))
-			// Bind the Input
-			InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
+		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
 		InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::Release);
 	}
 	else
@@ -109,11 +91,8 @@ const void UGrabber::FindInputComponent()
 	}
 }
 
-// Called every frame
-void UGrabber::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
+FVector UGrabber::GetReachLineStart()
 {
-	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
-
 	///Get The player view point this tick 
 	FVector PlayerViewPointLocation;
 	FRotator PlayerViewPointRotation;
@@ -122,13 +101,31 @@ void UGrabber::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompon
 		OUT PlayerViewPointRotation
 	);
 
-	FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector()*Reach;
+	return PlayerViewPointLocation;
+}
+
+FVector UGrabber::GetReachLineEnd()
+{
+	///Get The player view point this tick 
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
+		OUT PlayerViewPointLocation,
+		OUT PlayerViewPointRotation
+	);
+
+	return PlayerViewPointLocation + PlayerViewPointRotation.Vector()*Reach;
+}
+
+// Called every frame
+void UGrabber::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
+{
+	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
 
 	// if the physics handle is attached
 	if (PhysicsHandle->GrabbedComponent)
 	{
 		// move the object that we're holding
-		PhysicsHandle->SetTargetLocation(LineTraceEnd);
+		PhysicsHandle->SetTargetLocation(GetReachLineEnd());
 	}
 }
-
