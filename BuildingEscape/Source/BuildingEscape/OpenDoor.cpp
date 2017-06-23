@@ -30,29 +30,18 @@ void UOpenDoor::BeginPlay()
 	}
 }
 
-void UOpenDoor::OpenDoor() {
-	//Owner->SetActorRotation(FRotator(0.f, OpenAngle, 0.f));
-	OnOpenRequest.Broadcast();
-}
-
-void UOpenDoor::CloseDoor() {
-	Owner->SetActorRotation(FRotator(0.f, 0.f, 0.f));
-}
-
 // Called every frame
 void UOpenDoor::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
 {
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
 
-	if (GetTotalMassOfActorsOnPlate() > 30.0f )// TODO make into a parameter
+	if (GetTotalMassOfActorsOnPlate() > TriggerMass )// TODO make into a parameter
 	{
-		OpenDoor();
-		LastOpenDoorTime = GetWorld()->GetTimeSeconds();
+		OnOpen.Broadcast();
 	}
-	//Check if it's time to close the door
-	if (GetWorld()->GetTimeSeconds() - LastOpenDoorTime > DoorCloseDelay)
+	else
 	{
-		CloseDoor();
+		OnClose.Broadcast();
 	}
 }
 
